@@ -9,7 +9,7 @@ import(
 )
 
 type Config struct{
-	Env string `yaml:"env" env:"ENV" env-defaul:"local" env-required:"true"`
+	Env string `yaml:"env" env:"ENV" env-default:"local" env-required:"true"`
 	StoragePath string `yaml:"storage_path" env-required:"true"`
 	HTTPServer `yaml:"http_server"`
 	DB `yaml:"db"`
@@ -36,7 +36,7 @@ type WB struct{
 }
 
 type Ozon struct{
-	ClientID string `yaml:"client_id env:OZON_CLIENT_ID"`
+	ClientID string `yaml:"client_id" env:"OZON_CLIENT_ID"`
 	APIKey string `yaml:"api_key" env:"OZON_API_KEY"`
 }
 
