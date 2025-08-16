@@ -10,7 +10,7 @@ import(
 
 type Config struct{
 	Env string `yaml:"env" env:"ENV" env-default:"local" env-required:"true"`
-	StoragePath string `yaml:"storage_path" env-required:"true"`
+	StoragePath string `yaml:"storage_path"` // для локального sqlite
 	HTTPServer `yaml:"http_server"`
 	DB `yaml:"db"`
 	WB `yaml:"wb"`
@@ -58,6 +58,10 @@ func MustLoad() *Config{
 
 	if err := cleanenv.ReadConfig(configPath,&cfg); err!=nil{
 		log.Fatalf("cannot read config file: %s",err)
+	}
+	
+	if err := cleanenv.ReadEnv(&cfg); err != nil { // Позволяем env-переменным переопределять значения из файла
+		log.Fatalf("cannot read env: %v", err)
 	}
 	return &cfg
 }
