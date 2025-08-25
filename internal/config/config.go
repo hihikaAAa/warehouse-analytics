@@ -9,7 +9,7 @@ import(
 )
 
 type Config struct{
-	Env string `yaml:"env" env:"ENV" env-default:"local" env-required:"true"`
+	Env string `yaml:"env" env:"ENV" env-default:"local"`
 	StoragePath string `yaml:"storage_path"` // для локального sqlite
 	HTTPServer `yaml:"http_server"`
 	DB `yaml:"db"`

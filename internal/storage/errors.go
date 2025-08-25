@@ -4,7 +4,7 @@ import(
 	"errors"
 )
 
-var(
-	ErrURLNotFound = errors.New("url not found")
-	ErrURLExists = errors.New("url exists")
+var (
+  ErrNotFound = errors.New("not found")
+  ErrConflict = errors.New("conflict")
 )
