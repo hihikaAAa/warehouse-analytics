@@ -1,23 +1,25 @@
+-- +goose Up
 CREATE TABLE IF NOT EXISTS mp_platform (
   id serial PRIMARY KEY,
-  code text UNIQUE NOT NULL,            
+  code text UNIQUE NOT NULL,
   name text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS product (
   id serial PRIMARY KEY,
-  sku text UNIQUE NOT NULL UNIQUE,             
+  sku text UNIQUE NOT NULL,
   title text,
-  artiqle text, 
+  barcode text,
+  category text
 );
 
 CREATE TABLE IF NOT EXISTS listing (
   id serial PRIMARY KEY,
   product_id int REFERENCES product(id),
   platform_id int REFERENCES mp_platform(id),
-  mp_sku text,                         
+  mp_sku text,
   UNIQUE(product_id, platform_id),
-  UNIQUE(platform_id, mp_sku)           
+  UNIQUE(platform_id, mp_sku)
 );
 
 CREATE TABLE IF NOT EXISTS orders (
@@ -29,9 +31,7 @@ CREATE TABLE IF NOT EXISTS orders (
   buyer_region text,
   UNIQUE(platform_id, mp_order_id)
 );
-
-CREATE INDEX IF NOT EXISTS idx_orders_platform_created
-  ON orders(platform_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_orders_platform_created ON orders(platform_id, created_at);
 
 CREATE TABLE IF NOT EXISTS order_items (
   id bigserial PRIMARY KEY,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS order_items (
   price numeric(12,2) NOT NULL,
   discount numeric(12,2) NOT NULL DEFAULT 0,
   revenue numeric(12,2) GENERATED ALWAYS AS (qty*(price-discount)) STORED,
-  UNIQUE(order_id, listing_id)       
+  UNIQUE(order_id, listing_id)
 );
 
 CREATE TABLE IF NOT EXISTS shipments (
@@ -68,9 +68,7 @@ CREATE TABLE IF NOT EXISTS stock (
   updated_at timestamptz NOT NULL,
   UNIQUE(listing_id, warehouse)
 );
-
-CREATE INDEX IF NOT EXISTS idx_stock_listing_updated
-  ON stock(listing_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_stock_listing_updated ON stock(listing_id, updated_at DESC);
 
 CREATE TABLE IF NOT EXISTS stock_movements (
   id bigserial PRIMARY KEY,
@@ -91,16 +89,16 @@ CREATE TABLE IF NOT EXISTS kpi_sales_daily (
   PRIMARY KEY (day, listing_id)
 );
 
-
 CREATE TABLE IF NOT EXISTS etl_cursors (
   id serial PRIMARY KEY,
   platform_id int REFERENCES mp_platform(id),
-  resource text NOT NULL,               
-  cursor_value text NOT NULL,           
+  resource text NOT NULL,
+  cursor_value text NOT NULL,
   updated_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE(platform_id, resource)
 );
 
+-- +goose Down
 DROP TABLE IF EXISTS etl_cursors;
 DROP TABLE IF EXISTS kpi_sales_daily;
 DROP TABLE IF EXISTS stock_movements;
